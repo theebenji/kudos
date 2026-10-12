@@ -225,12 +225,25 @@ See [ADR-0005](adr/0005-auth-bridge.md).
 ### 2.6 Component library (`packages/ui`)
 
 - **CSS Modules + Radix** primitives. See [ADR-0008](adr/0008-css-modules-radix.md).
-- **Design tokens** are defined in TypeScript and compiled to CSS custom properties. Themes switch via `data-theme="light|dark"`. Components may only use tokens.
+- **Design tokens** are defined in TypeScript (`src/tokens/tokens.ts`) and compiled to CSS custom properties (`tokens.css`, generated and committed). Themes switch via `data-theme="light|dark"` or the system setting. Components may only use semantic tokens, never the raw palette.
+  - A unit test enforces WCAG contrast for every foreground/background pair in both themes.
+  - A drift test fails if `tokens.css` is stale.
 - Exports:
-  - **primitives**: Button, Avatar, Dialog, Combobox, …
-  - **`patterns/`**: kudos-specific components (KudoCard, ReactionBar, ValueBadge, …)
+  - **primitives** (`@repo/ui`):
+    - Button, IconButton, Spinner, Badge
+    - Avatar, AvatarGroup, Card
+    - TextField, TextArea
+    - Dialog, Popover, Tooltip, Menu, Tabs
+    - Skeleton, EmptyState, VisuallyHidden
+    - the `formatRelativeTime` helper
+  - **patterns** (`@repo/ui/patterns`): KudoCard, ReactionBar, ValueBadge
+  - **tokens** (`@repo/ui/tokens`, `@repo/ui/tokens.css`)
+- **Base reset:** `@repo/ui/reset.css` (box-sizing `border-box`, body margin, form-control fonts, responsive media) sits in a CSS `@layer reset`. Component and app styles always win over it without overrides. Every consumer imports it before `tokens.css`.
+- **The recipient picker** is a multi-select combobox **built in-house on Radix Popover**, following the WAI-ARIA combobox pattern. No second accessibility library (Phase 4).
 - The web app consumes it **as source** via `transpilePackages`, with no build step.
 - **Storybook** (Vite builder) runs directly against the source.
+  - Every story runs as a test **twice**, pinned to the light theme and then the dark one, with axe checks.
+  - Chromatic snapshots both themes through `modes`.
 
 ### 2.7 Testing
 
@@ -280,8 +293,8 @@ See [ADR-0010](adr/0010-docs-and-vault-sync.md).
 | 0   | Spec, architecture, ADRs, docs sync                                                         | ✅ done ([note](build-log/phase-0.md)) |
 | 1   | Monorepo scaffold, tooling, CI, Docker Compose (Postgres, SeaweedFS), Storybook + Chromatic | ✅ done ([note](build-log/phase-1.md)) |
 | 2   | DB schema + seed, API skeleton + auth bridge                                                | ✅ done ([note](build-log/phase-2.md)) |
-| 3   | UI primitives + tokens in Storybook                                                         | ⏳ next                                |
-| 4   | Feed, composer (Tiptap / emoji / GIF), profiles                                             | —                                      |
+| 3   | UI primitives + tokens in Storybook                                                         | ✅ done ([note](build-log/phase-3.md)) |
+| 4   | Feed, composer (Tiptap / emoji / GIF), profiles                                             | ⏳ next                                |
 | 5   | Reactions, comments, mentions, notifications (outbox + subscriptions)                       | —                                      |
 | 6   | Directory search, leaderboard, admin pages                                                  | —                                      |
 | 7   | Playwright E2E pass + a11y sweep                                                            | —                                      |

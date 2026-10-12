@@ -1,0 +1,6 @@
+/* Storybook canvas only: use the app's page background and font so stories look like the product. */
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}

@@ -1,0 +1,15 @@
+.content {
+  z-index: var(--z-tooltip);
+  max-width: 16rem;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  box-shadow: var(--shadow-md);
+}
+
+.arrow {
+  fill: var(--color-text);
+}

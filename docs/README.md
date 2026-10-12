@@ -46,12 +46,14 @@ TABLE status, updated FROM "adr" SORT file.name ASC
 - [Renaming the project](guides/renaming-the-project.md)
 - [Porting to production](guides/porting-to-production.md)
 - [Local setup](guides/local-setup.md)
+- [Design system](guides/design-system.md)
 
 ## Build log
 
 - [Phase 0: spec and docs](build-log/phase-0.md)
 - [Phase 1: monorepo scaffold](build-log/phase-1.md)
 - [Phase 2: database, API, auth bridge](build-log/phase-2.md)
+- [Phase 3: design system](build-log/phase-3.md)
 
 ## Templates
 

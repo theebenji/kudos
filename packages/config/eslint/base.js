@@ -15,5 +15,23 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
     },
   },
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      // No `!important` in styles written from TypeScript either (inline `style` values, CSS strings).
+      // CSS files are covered by Stylelint's declaration-no-important.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "Literal[value=/!\\s*important/i]",
+          message: "Don't use !important; rely on the cascade (see docs/guides/design-system.md).",
+        },
+        {
+          selector: "TemplateElement[value.raw=/!\\s*important/i]",
+          message: "Don't use !important; rely on the cascade (see docs/guides/design-system.md).",
+        },
+      ],
+    },
+  },
   prettier,
 );

@@ -1,11 +1,5 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
+/* Page-level styles. The base reset (box-sizing, margins, form fonts) comes from @repo/ui/reset.css. */
 body {
-  margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);

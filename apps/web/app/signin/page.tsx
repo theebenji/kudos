@@ -44,7 +44,7 @@ export default async function SignInPage({ searchParams }: Props) {
           <h2 id="demo-heading">Demo: sign in as a seeded user</h2>
           <p className={styles.note}>Development only — no password. Admins are listed first.</p>
           <form action={signInAs}>
-            <ul className={styles.people}>
+            <ul role="list" className={styles.people}>
               {people.map((person) => (
                 <li key={person.id}>
                   <Button type="submit" name="userId" value={person.id} variant="secondary">

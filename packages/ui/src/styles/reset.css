@@ -1,0 +1,127 @@
+/*
+ * Base reset for every app and Storybook that uses @repo/ui. Import it before tokens.css.
+ * Deliberately heavy-handed: no browser default margins, consistent media and form controls,
+ * readable text defaults, and two accessibility guarantees that nothing can turn off.
+ *
+ * Everything is inside `@layer reset`. Unlayered styles (all component CSS Modules and app styles)
+ * always beat layered ones, whatever their specificity, so components adjust these defaults
+ * naturally, with no stronger selectors needed.
+ */
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* No default margins anywhere: all spacing comes from components and tokens (gap, --space-*). */
+  * {
+    margin: 0;
+  }
+
+  html {
+    /* iOS Safari still only supports the prefixed property (stops landscape font inflation). */
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    /* Fills the screen on mobile without jumping when the browser toolbar shows and hides. */
+    min-height: 100dvh;
+
+    /* Readable body text; WCAG text-spacing guidance assumes about 1.5. */
+    line-height: var(--line-height-normal, 1.5);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Media scales down with its container and keeps its aspect ratio (e.g. GIFs in kudos). */
+  img,
+  picture,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Form controls match the surrounding text instead of the browser's UI font and colors. */
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+
+  /* Long unbroken strings (URLs, names) wrap instead of pushing the layout sideways. */
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Lists marked role="list" are UI (feeds, menus, chips), not prose: no bullets or indent.
+     The explicit role also keeps list semantics in Safari, which drops them when bullets are removed. */
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+    padding: 0;
+  }
+
+  /* Anchor targets (e.g. a linked comment) don't land underneath a sticky header. */
+  :target {
+    scroll-margin-block: 5ex;
+  }
+
+  /*
+   * The only `!important` declarations allowed in the codebase (Stylelint is disabled for exactly
+   * these lines). They are accessibility guarantees that no component may override:
+   *
+   * - `hidden` must always hide. Without `!important`, any component that sets `display` (e.g.
+   *   `display: flex`) would silently make the `hidden` attribute stop working.
+   * - People who ask their OS for reduced motion get it everywhere, including animations in
+   *   components that forgot to check `prefers-reduced-motion`.
+   *
+   * Inside a cascade layer, `!important` precedence is reversed: important declarations in this
+   * lowest layer beat every other declaration, including inline styles and other `!important`s.
+   * That is exactly the guarantee wanted here, and why these can't simply be normal declarations
+   * (which would lose to every component style).
+   */
+  /* stylelint-disable declaration-no-important */
+  [hidden]:not([hidden="until-found"]) {
+    display: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* stylelint-enable declaration-no-important */
+}

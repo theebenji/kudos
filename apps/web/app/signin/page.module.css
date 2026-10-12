@@ -12,13 +12,11 @@
 }
 
 .demo h2 {
-  margin: 0;
   font-size: var(--font-size-md);
 }
 
 .note,
 .meta {
-  margin: 0;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
@@ -26,9 +24,6 @@
 .people {
   display: grid;
   gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
 .people button {

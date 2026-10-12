@@ -1,4 +1,5 @@
 import { brand } from "@repo/config/brand";
+import "@repo/ui/reset.css";
 import "@repo/ui/tokens.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";

@@ -1,0 +1,63 @@
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-text);
+  font-weight: var(--font-weight-semibold);
+  user-select: none;
+}
+
+.xs {
+  width: var(--size-avatar-xs);
+  height: var(--size-avatar-xs);
+  font-size: 0.625rem;
+}
+
+.sm {
+  width: var(--size-avatar-sm);
+  height: var(--size-avatar-sm);
+  font-size: var(--font-size-xs);
+}
+
+.md {
+  width: var(--size-avatar-md);
+  height: var(--size-avatar-md);
+  font-size: var(--font-size-sm);
+}
+
+.lg {
+  width: var(--size-avatar-lg);
+  height: var(--size-avatar-lg);
+  font-size: var(--font-size-xl);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fallback {
+  line-height: 1;
+}
+
+.group {
+  display: inline-flex;
+}
+
+.group > * {
+  box-shadow: 0 0 0 2px var(--color-surface-raised);
+}
+
+/* Small overlap so initials stay readable at every size. */
+.group > * + * {
+  margin-left: calc(var(--space-1) * -1.5);
+}
+
+.more {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
