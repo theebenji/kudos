@@ -5,6 +5,7 @@ import { afterAll, beforeEach, inject } from "vitest";
 import { API_TOKEN_AUDIENCE, API_TOKEN_ISSUER } from "../src/auth/token";
 import { type Env, loadEnv } from "../src/env";
 import { BundledGifProvider } from "../src/gifs/provider";
+import { createPgPubSub } from "../src/realtime/pubsub";
 import { createApp } from "../src/yoga";
 
 export const TEST_JWT_SECRET = "test-only-jwt-secret-at-least-32-characters";
@@ -18,10 +19,14 @@ export function setupTestApi(envOverrides: Partial<Record<keyof Env, string>> = 
     ...envOverrides,
   });
   const db = createDb(env.DATABASE_URL, { max: 2 });
-  const app = createApp({ db, env, gifs: new BundledGifProvider() });
+  const pubsub = createPgPubSub(db.$client);
+  const app = createApp({ db, env, gifs: new BundledGifProvider(), pubsub });
 
   beforeEach(() => resetDb(db));
-  afterAll(() => db.$client.end());
+  afterAll(async () => {
+    await pubsub.close();
+    await db.$client.end();
+  });
 
   async function gql<T = Record<string, unknown>>(
     query: string,
@@ -38,7 +43,7 @@ export function setupTestApi(envOverrides: Partial<Record<keyof Env, string>> = 
     return { ...((await response.json()) as object), status: response.status };
   }
 
-  return { db, app, env, gql };
+  return { db, app, env, gql, pubsub };
 }
 
 export async function resetDb(db: Database) {

@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useState } from "react";
 import { EMOJI } from "./emoji-data";
 import { PickerGrid } from "./PickerGrid";

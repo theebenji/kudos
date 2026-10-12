@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { PickerGrid } from "./PickerGrid";
 import styles from "./Pickers.module.css";

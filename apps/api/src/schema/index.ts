@@ -5,6 +5,8 @@ import "./types/user";
 import "./types/value";
 import "./types/kudo";
 import "./types/search";
+import "./types/engagement";
+import "./types/notification";
 
 builder.queryType({
   fields: (t) => ({

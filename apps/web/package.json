@@ -21,6 +21,7 @@
     "@repo/rich-text": "workspace:*",
     "@repo/ui": "workspace:*",
     "graphql": "^17.0.2",
+    "graphql-ws": "^6.3.0",
     "jose": "^6.2.12",
     "lucide-react": "^1.55.0",
     "next": "^16.4.0",

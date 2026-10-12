@@ -1,6 +1,6 @@
 # Local infrastructure. The Compose project name is one of the three places the product name lives.
 #   docker compose up -d                       → Postgres + S3 storage (run the apps with `pnpm dev`)
-#   docker compose --profile app up -d --build → also migrate, then run the API and web app in containers
+#   docker compose --profile app up -d --build → also migrate, then run the API, worker and web app in containers
 # Secrets below are dev-only defaults, matching .env.example. Never reuse them anywhere real.
 name: kudos
 
@@ -68,6 +68,23 @@ services:
         condition: service_completed_successfully
       storage:
         condition: service_started
+
+  # Drains the outbox into notifications and pushes them live (ADR-0006). Same image as the API.
+  worker:
+    profiles: [app]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ["node", "dist/worker.js"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: *db-url
+      AUTH_JWT_SECRET: *jwt-secret
+    healthcheck:
+      disable: true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
   web:
     profiles: [app]

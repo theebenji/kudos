@@ -27,6 +27,13 @@ export const KUDO_FIELDS = graphql(`
       name
       emoji
     }
+    reactions {
+      emoji
+      count
+      reactedByViewer
+      names
+    }
+    commentCount
   }
 `);
 

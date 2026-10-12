@@ -10,6 +10,8 @@ import { useState } from "react";
 import { useComposer } from "@/components/composer/ComposerProvider";
 import { graphql } from "@/gql";
 import type { KudoFieldsFragment } from "@/gql/graphql";
+import { Comments } from "./Comments";
+import { Reactions } from "./Reactions";
 import { RichText } from "./RichText";
 
 const DELETE_KUDO = graphql(`
@@ -31,13 +33,14 @@ const person = (p: { handle: string; name: string; isActive: boolean }) => ({
   href: p.isActive ? `/people/${p.handle}` : undefined,
 });
 
-export function KudoItem({
-  kudo,
-  onDeleted,
-}: {
+type Props = {
   kudo: KudoFieldsFragment;
   onDeleted?: () => void;
-}) {
+  /** Show the comment thread expanded (the kudo's own page). */
+  commentsOpen?: boolean;
+};
+
+export function KudoItem({ kudo, onDeleted, commentsOpen = false }: Props) {
   const composer = useComposer();
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +79,8 @@ export function KudoItem({
         edited={kudo.isEdited}
         permalink={`/kudos/${encodeURIComponent(kudo.id)}`}
         linkComponent={Link}
+        reactions={<Reactions kudo={kudo} />}
+        footer={<Comments kudoId={kudo.id} count={kudo.commentCount} defaultOpen={commentsOpen} />}
         actions={
           canAct && (
             <Menu

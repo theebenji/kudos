@@ -37,7 +37,7 @@ export function KudoPermalink({ id }: { id: string }) {
   return (
     <>
       <h1 style={{ fontSize: "var(--font-size-xl)", marginBottom: "var(--space-4)" }}>Kudo</h1>
-      <KudoItem kudo={data.kudo} onDeleted={() => router.push("/")} />
+      <KudoItem kudo={data.kudo} onDeleted={() => router.push("/")} commentsOpen />
     </>
   );
 }

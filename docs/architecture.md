@@ -28,11 +28,11 @@ flowchart LR
   subgraph api["apps/api"]
     YOGA[GraphQL Yoga<br/>Pothos schema]
     WS[graphql-ws<br/>subscriptions]
-    WORKER[pg-boss worker<br/>NotificationChannels]
+    WORKER[Outbox worker<br/>NotificationChannels]
   end
 
   PG[(PostgreSQL)]
-  PUB[(PubSub<br/>in-memory / Redis)]
+  PUB[(PubSub<br/>Postgres NOTIFY / Redis)]
   S3[(SeaweedFS / S3)]
   GIPHY[GIPHY API]
 
@@ -78,7 +78,7 @@ sequenceDiagram
   participant C as Client
   participant A as API resolver
   participant DB as Postgres
-  participant W as pg-boss worker
+  participant W as Outbox worker
   participant P as PubSub
   C->>A: createKudo(...)
   A->>DB: BEGIN; insert kudo, recipients, mentions; insert outbox_event; COMMIT
@@ -97,7 +97,7 @@ sequenceDiagram
 
 | Interface             | Default (demo)                          | Real-world option       |
 | --------------------- | --------------------------------------- | ----------------------- |
-| `PubSub`              | in-memory                               | Redis                   |
+| `PubSub`              | Postgres LISTEN/NOTIFY                  | Redis                   |
 | `FileStorage`         | SeaweedFS (S3 API)                      | S3 / R2                 |
 | `NotificationChannel` | `InAppChannel`                          | + `EmailChannel`        |
 | `UserDirectorySource` | Faker seed                              | HRIS / SCIM             |

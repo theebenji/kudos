@@ -1,9 +1,10 @@
+"use client";
+
 import { clsx } from "clsx";
 import { type ElementType, Fragment, type ReactNode, useId } from "react";
 import { Avatar } from "../../primitives/Avatar/Avatar";
 import { Card } from "../../primitives/Card/Card";
-import { formatFullDate, formatRelativeTime, formatStableDate } from "../../utils/relative-time";
-import { useNow } from "../../utils/use-now";
+import { RelativeTime } from "../../utils/RelativeTime";
 import { ValueBadge } from "../ValueBadge/ValueBadge";
 import styles from "./KudoCard.module.css";
 
@@ -76,17 +77,7 @@ export function KudoCard({
   className,
 }: KudoCardProps) {
   const headingId = useId();
-  const clientNow = useNow();
-  const reference = now ?? clientNow;
-  // Until the browser's clock is known (server render + hydration), show a timezone-stable date.
-  const time = (
-    <time
-      dateTime={createdAt.toISOString()}
-      title={reference ? formatFullDate(createdAt) : undefined}
-    >
-      {reference ? formatRelativeTime(createdAt, reference) : formatStableDate(createdAt)}
-    </time>
-  );
+  const time = <RelativeTime date={createdAt} now={now} />;
   return (
     <Card asChild padding="none">
       <article className={clsx(styles.card, className)} aria-labelledby={headingId}>

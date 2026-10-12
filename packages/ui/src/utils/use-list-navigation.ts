@@ -1,3 +1,5 @@
+"use client";
+
 import { type KeyboardEvent, useCallback, useState } from "react";
 
 export type ListNavigationOptions = {
