@@ -6,6 +6,7 @@ import {
 import { type Kudo, kudoMentions, kudoRecipients, kudos, type User, users } from "@repo/db";
 import { and, count, desc, eq, exists, inArray, isNull, or, type SQL, sql } from "drizzle-orm";
 import { createKudo, deleteKudo, updateKudo } from "../../domain/kudos";
+import { wakeWorker } from "../../realtime/pubsub";
 import type { Context } from "../../context";
 import { builder } from "../builder";
 import { ForbiddenError, NotFoundError, RateLimitError, ValidationError } from "../errors";
@@ -252,12 +253,15 @@ builder.mutationFields((t) => ({
     authScopes: { member: true },
     errors: { types: [ValidationError, RateLimitError] },
     args: { input: t.arg({ type: CreateKudoInput, required: true }) },
-    resolve: (_root, { input }, ctx) =>
-      createKudo(ctx.db, viewerOf(ctx), {
+    resolve: async (_root, { input }, ctx) => {
+      const kudo = await createKudo(ctx.db, viewerOf(ctx), {
         recipientIds: input.recipientIds.map((id) => id.id),
         valueId: input.valueId?.id ?? null,
         body: input.body,
-      }),
+      });
+      void wakeWorker(ctx.db.$client);
+      return kudo;
+    },
   }),
 
   updateKudo: t.field({
@@ -265,12 +269,15 @@ builder.mutationFields((t) => ({
     authScopes: { member: true },
     errors: { types: [ValidationError, NotFoundError, ForbiddenError] },
     args: { input: t.arg({ type: UpdateKudoInput, required: true }) },
-    resolve: (_root, { input }, ctx) =>
-      updateKudo(ctx.db, viewerOf(ctx), {
+    resolve: async (_root, { input }, ctx) => {
+      const kudo = await updateKudo(ctx.db, viewerOf(ctx), {
         kudoId: input.id.id,
         valueId: input.valueId?.id ?? null,
         body: input.body,
-      }),
+      });
+      void wakeWorker(ctx.db.$client);
+      return kudo;
+    },
   }),
 
   deleteKudo: t.field({

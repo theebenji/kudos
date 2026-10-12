@@ -8,7 +8,7 @@ import { schema } from "./schema";
 
 export type AppDeps = ContextDeps & { env: Env };
 
-export function createApp({ db, env, gifs }: AppDeps) {
+export function createApp({ db, env, gifs, pubsub }: AppDeps) {
   const production = env.NODE_ENV === "production";
   // Query-shape limits against abusive operations (SPEC §2.3).
   // Report violations as ordinary validation errors (HTTP 400 with a clear message). Armor's
@@ -22,13 +22,19 @@ export function createApp({ db, env, gifs }: AppDeps) {
     maxAliases: { n: 15, ...report },
     maxDirectives: { n: 25, ...report },
     maxTokens: { n: 2000, ...report },
-    costLimit: { maxCost: 5000, ...report },
+    // Sized from the web app's real operations (heaviest ≈ 8.5k); test/operations.test.ts keeps it honest.
+    costLimit: { maxCost: 15000, ...report },
     blockFieldSuggestion: { enabled: production },
   });
 
   return createYoga({
     schema,
-    context: ({ request }) => createContext(request, { db, env, gifs }),
+    // HTTP requests bring `request`; WebSocket operations bring graphql-ws `connectionParams` (see server.ts).
+    context: (initial: { request?: Request; connectionParams?: Record<string, unknown> }) =>
+      createContext(
+        { request: initial.request, connectionParams: initial.connectionParams },
+        { db, env, gifs, pubsub },
+      ),
     graphqlEndpoint: "/graphql",
     cors: { origin: env.WEB_ORIGIN, credentials: true },
     graphiql: !production,

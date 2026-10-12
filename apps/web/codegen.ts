@@ -12,6 +12,8 @@ const config: CodegenConfig = {
       presetConfig: { fragmentMasking: false },
       config: {
         useTypeImports: true,
+        // Apollo adds __typename to every object; type it as always present (needed for optimistic responses).
+        nonOptionalTypename: true,
         enumsAsTypes: true,
         scalars: { DateTime: "string", Date: "string", JSON: "unknown", ID: "string" },
       },

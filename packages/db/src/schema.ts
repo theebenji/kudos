@@ -179,11 +179,17 @@ export const notifications = pgTable(
     kudoId: uuid("kudo_id").references(() => kudos.id, { onDelete: "cascade" }),
     commentId: uuid("comment_id").references(() => comments.id, { onDelete: "cascade" }),
     actorId: uuid("actor_id").references(() => users.id),
+    /** How many events this notification stands for (reactions are batched per kudo). */
+    count: integer("count").notNull().default(1),
     createdAt: createdAt(),
     readAt: timestamptz("read_at"),
   },
   (t) => [
     index("notifications_user_idx").on(t.userId, t.createdAt.desc()),
+    // At most one unread reaction notification per person and kudo; new reactions update it.
+    uniqueIndex("notifications_unread_reaction_key")
+      .on(t.userId, t.kudoId)
+      .where(sql`${t.kind} = 'reaction' and ${t.readAt} is null`),
     index("notifications_unread_idx")
       .on(t.userId)
       .where(sql`${t.readAt} is null`),
@@ -199,6 +205,9 @@ export const outboxEvents = pgTable(
     payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
     createdAt: createdAt(),
     processedAt: timestamptz("processed_at"),
+    /** Failed processing attempts; the worker retries with backoff and gives up after a limit. */
+    attempts: integer("attempts").notNull().default(0),
+    lastError: text("last_error"),
   },
   (t) => [
     index("outbox_events_pending_idx")

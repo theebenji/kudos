@@ -56,6 +56,7 @@ TABLE status, updated FROM "adr" SORT file.name ASC
 - [Phase 2: database, API, auth bridge](build-log/phase-2.md)
 - [Phase 3: design system](build-log/phase-3.md)
 - [Phase 4: feed, composer, profiles](build-log/phase-4.md)
+- [Phase 5: reactions, comments, notifications](build-log/phase-5.md)
 
 ## Templates
 

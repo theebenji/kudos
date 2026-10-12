@@ -200,7 +200,7 @@ The composer is a **modal** that can be opened from anywhere.
   - introspection and field suggestions disabled in production
   - per-user rate limits (Phase 4)
 - Subscriptions over **graphql-ws**.
-- `PubSub` interface: in-memory by default, **Redis** chosen by an env var. Redis is required before running more than one API instance.
+- `PubSub`: **Postgres `LISTEN/NOTIFY`** by default, so the separate worker process can reach the API's subscribers. **Redis** is the option for scaling out ([ADR-0006](adr/0006-outbox-notifications.md), amended).
 
 ### 2.4 Auth bridge
 
@@ -219,7 +219,7 @@ See [ADR-0005](adr/0005-auth-bridge.md).
 - Ids are time-ordered `uuidv7()` (built into Postgres 18).
 - Extensions: `pg_trgm` (fuzzy search).
 - Seed: `pnpm db:seed` builds a deterministic demo org of 50 people (including `admin@example.com` and `member@example.com`), with 300 kudos plus reactions, comments and notifications.
-- **Outbox + pg-boss** pipeline for notifications. See [ADR-0006](adr/0006-outbox-notifications.md).
+- **Outbox** pipeline for notifications. A worker claims events with `FOR UPDATE SKIP LOCKED` and retries them, with no pg-boss. See [ADR-0006](adr/0006-outbox-notifications.md).
 - `FileStorage` interface (S3 API): **SeaweedFS** in Docker Compose for dev ([ADR-0011](adr/0011-seaweedfs-replaces-minio.md); MinIO was the original choice), S3/R2 later. Used for avatars.
 - `LeaderboardService`: live aggregate SQL for now, which can become a materialized view refreshed by pg-boss later.
 
@@ -296,8 +296,8 @@ See [ADR-0010](adr/0010-docs-and-vault-sync.md).
 | 2   | DB schema + seed, API skeleton + auth bridge                                                | ✅ done ([note](build-log/phase-2.md)) |
 | 3   | UI primitives + tokens in Storybook                                                         | ✅ done ([note](build-log/phase-3.md)) |
 | 4   | Feed, composer (Tiptap / emoji / GIF), profiles                                             | ✅ done ([note](build-log/phase-4.md)) |
-| 5   | Reactions, comments, mentions, notifications (outbox + subscriptions)                       | ⏳ next                                |
-| 6   | Directory search, leaderboard, admin pages                                                  | —                                      |
+| 5   | Reactions, comments, mentions, notifications (outbox + subscriptions)                       | ✅ done ([note](build-log/phase-5.md)) |
+| 6   | Directory search, leaderboard, admin pages, profile settings (avatar + bio)                 | ⏳ next                                |
 | 7   | Playwright E2E pass + a11y sweep                                                            | —                                      |
 
 Each phase ends with: `SPEC.md` updated if anything changed, a `build-log/phase-N.md` entry, a new ADR for any mid-build decision, and `pnpm docs:sync`.

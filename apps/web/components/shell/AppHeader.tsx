@@ -6,6 +6,7 @@ import { LogOut, Plus, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useComposer } from "@/components/composer/ComposerProvider";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import styles from "./AppHeader.module.css";
 
 type Props = {
@@ -27,6 +28,7 @@ export function AppHeader({ viewer, signOutAction }: Props) {
           <Link href={`/people/${viewer.handle}`}>My kudos</Link>
         </nav>
         <div className={styles.actions}>
+          <NotificationBell />
           <Button size="sm" onClick={() => composer.open()}>
             <Plus size={16} aria-hidden /> Give kudos
           </Button>

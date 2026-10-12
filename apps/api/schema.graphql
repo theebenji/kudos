@@ -1,3 +1,20 @@
+union AddCommentResult = AddCommentSuccess | NotFoundError | ValidationError
+
+type AddCommentSuccess {
+  data: Comment!
+}
+
+type Comment implements Node {
+  author: User!
+  body: String!
+  createdAt: DateTime!
+  id: ID!
+  isEdited: Boolean!
+  kudo: Kudo
+  viewerCanDelete: Boolean!
+  viewerCanEdit: Boolean!
+}
+
 type ConflictError implements Error {
   message: String!
 }
@@ -31,6 +48,12 @@ scalar Date
 
 """An ISO-8601 timestamp, e.g. 2026-10-11T17:00:00.000Z"""
 scalar DateTime
+
+union DeleteCommentResult = DeleteCommentSuccess | ForbiddenError | NotFoundError
+
+type DeleteCommentSuccess {
+  data: Kudo!
+}
 
 union DeleteKudoResult = DeleteKudoSuccess | ForbiddenError | NotFoundError
 
@@ -76,15 +99,32 @@ type Kudo implements Node {
 
   """Plain-text version, for previews and search."""
   bodyText: String!
+  commentCount: Int!
+
+  """Oldest first."""
+  comments(after: String, before: String, first: Int, last: Int): KudoCommentConnection!
   createdAt: DateTime!
   editedAt: DateTime
   id: ID!
   isEdited: Boolean!
+
+  """One entry per emoji, most popular first."""
+  reactions: [ReactionSummary!]!
   recipients: [User!]!
   sender: User!
   value: Value
   viewerCanDelete: Boolean!
   viewerCanEdit: Boolean!
+}
+
+type KudoCommentConnection {
+  edges: [KudoCommentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type KudoCommentEdge {
+  cursor: String!
+  node: Comment!
 }
 
 type KudoConnection {
@@ -112,13 +152,30 @@ input KudoFilter {
 }
 
 type Mutation {
+  addComment(body: String!, kudoId: ID!): AddCommentResult!
   createKudo(input: CreateKudoInput!): CreateKudoResult!
   createValue(input: CreateValueInput!): CreateValueResult!
+
+  """
+  Soft-deletes a comment and returns its kudo (so clients can refresh its count).
+  """
+  deleteComment(id: ID!): DeleteCommentResult!
 
   """
   Soft-deletes a kudo and returns its global id (so clients can evict it from caches).
   """
   deleteKudo(id: ID!): DeleteKudoResult!
+
+  """
+  Marks the given notifications (or all, if no ids) as read. Returns the remaining unread count.
+  """
+  markNotificationsRead(ids: [ID!]): Int!
+
+  """
+  Adds the viewer's emoji reaction to a kudo, or removes it if already there.
+  """
+  toggleReaction(emoji: String!, kudoId: ID!): ToggleReactionResult!
+  updateComment(body: String!, id: ID!): UpdateCommentResult!
   updateKudo(input: UpdateKudoInput!): UpdateKudoResult!
 }
 
@@ -128,6 +185,38 @@ interface Node {
 
 type NotFoundError implements Error {
   message: String!
+}
+
+type Notification implements Node {
+  actor: User
+  comment: Comment
+
+  """Events this stands for (reactions are batched per kudo)."""
+  count: Int!
+  createdAt: DateTime!
+  id: ID!
+  isRead: Boolean!
+  kind: NotificationKind!
+
+  """Null if the kudo was deleted."""
+  kudo: Kudo
+}
+
+type NotificationConnection {
+  edges: [NotificationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type NotificationEdge {
+  cursor: String!
+  node: Notification!
+}
+
+enum NotificationKind {
+  COMMENT
+  KUDO_RECEIVED
+  MENTION
+  REACTION
 }
 
 type PageInfo {
@@ -162,6 +251,9 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
 
+  """The viewer's notifications, newest first."""
+  notifications(after: String, before: String, first: Int, last: Int): NotificationConnection!
+
   """
   Active people whose name, title or team matches; best matches first. For pickers and @mentions.
   """
@@ -169,6 +261,7 @@ type Query {
 
   """Teams of active people, for filters."""
   teams: [String!]!
+  unreadNotificationCount: Int!
   user(handle: String!): User
 
   """Active people, alphabetical by name."""
@@ -186,6 +279,34 @@ type Query {
 type RateLimitError implements Error {
   message: String!
   retryAfterSeconds: Int!
+}
+
+type ReactionSummary {
+  count: Int!
+  emoji: String!
+
+  """Up to 5 people who reacted, the viewer first as "You"."""
+  names: [String!]!
+  reactedByViewer: Boolean!
+}
+
+type Subscription {
+  """
+  Pushes each notification delivered to the viewer (in-app channel, via the worker).
+  """
+  notificationAdded: Notification!
+}
+
+union ToggleReactionResult = NotFoundError | ToggleReactionSuccess | ValidationError
+
+type ToggleReactionSuccess {
+  data: Kudo!
+}
+
+union UpdateCommentResult = ForbiddenError | NotFoundError | UpdateCommentSuccess | ValidationError
+
+type UpdateCommentSuccess {
+  data: Comment!
 }
 
 input UpdateKudoInput {

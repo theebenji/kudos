@@ -1,3 +1,5 @@
+"use client";
+
 import { type RichTextDoc, toPlainText } from "@repo/rich-text";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import { PluginKey } from "@tiptap/pm/state";

@@ -1,0 +1,76 @@
+.comments {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.thread {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.author {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+a.author:hover {
+  text-decoration: underline;
+}
+
+a.author:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.body {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: var(--font-size-sm);
+}
+
+.form,
+.editForm {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.form {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

@@ -1,3 +1,4 @@
+import { ToastProvider } from "@repo/ui";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { signOut } from "@/auth";
@@ -23,15 +24,17 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const { API_URL, PUBLIC_API_URL } = env();
   return (
     <ApolloWrapper serverApiUrl={API_URL} browserApiUrl={PUBLIC_API_URL} initialToken={token}>
-      <ComposerProvider viewerId={viewer.id}>
-        <a href="#main" className={styles.skipLink}>
-          Skip to content
-        </a>
-        <AppHeader viewer={viewer} signOutAction={signOutAction} />
-        <main id="main" className={styles.main} tabIndex={-1}>
-          {children}
-        </main>
-      </ComposerProvider>
+      <ToastProvider>
+        <ComposerProvider viewerId={viewer.id}>
+          <a href="#main" className={styles.skipLink}>
+            Skip to content
+          </a>
+          <AppHeader viewer={viewer} signOutAction={signOutAction} />
+          <main id="main" className={styles.main} tabIndex={-1}>
+            {children}
+          </main>
+        </ComposerProvider>
+      </ToastProvider>
     </ApolloWrapper>
   );
 }

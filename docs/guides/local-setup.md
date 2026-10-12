@@ -23,7 +23,7 @@ cp .env.example .env                                       # dev defaults; every
 pnpm --filter @repo/ui exec playwright install chromium   # browser for Storybook tests
 pnpm infra:up                                              # Postgres :5432, S3 storage :8333
 pnpm db:migrate && pnpm db:seed                            # schema + deterministic demo org
-pnpm dev                                                   # web :3000, API :4000/graphql
+pnpm dev                                                   # web :3000, API :4000/graphql (+ notification worker)
 ```
 
 Open http://localhost:3000 and pick someone from the **demo sign-in list**. **Avery Admin** (admin) and **Morgan Member** (member) are always at the top. The seed resets all data each time it runs, and refuses to run when `NODE_ENV=production`.
@@ -64,6 +64,10 @@ If `docker` isn't found right after installing Docker Desktop, open a new termin
 1. Create a project at chromatic.com, linked to the GitHub repo.
 2. Add its token as the GitHub Actions secret `CHROMATIC_PROJECT_TOKEN`. CI skips the Chromatic job with a notice until the secret exists.
 3. To run it locally: `CHROMATIC_PROJECT_TOKEN=… pnpm --filter @repo/ui chromatic`.
+
+## Notifications
+
+`pnpm dev` runs the notification worker inside the API's dev process. In Docker, it's the separate `worker` service. The worker turns outbox events into notifications and pushes them to browsers over WebSockets (`ws://localhost:4000/graphql`). If notifications stop arriving, check that the worker is running, and look for rows in `outbox_events` with a `last_error`.
 
 ## GIF search
 
