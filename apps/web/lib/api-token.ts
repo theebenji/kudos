@@ -7,8 +7,10 @@ const ISSUER = "kudos-web";
 const AUDIENCE = "kudos-api";
 export const API_TOKEN_TTL_SECONDS = 5 * 60;
 
+export type ApiToken = { token: string; expiresAt: number };
+
 /** A short-lived token the GraphQL API trusts. Carries only the user id; the API reads the role from the DB. */
-export async function mintApiToken(userId: string): Promise<{ token: string; expiresAt: number }> {
+export async function mintApiToken(userId: string): Promise<ApiToken> {
   const expiresAt = Math.floor(Date.now() / 1000) + API_TOKEN_TTL_SECONDS;
   const token = await new SignJWT({})
     .setProtectedHeader({ alg: "HS256" })

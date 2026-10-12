@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatRelativeTime } from "./relative-time";
+import { formatRelativeTime, formatStableDate } from "./relative-time";
 
 const now = new Date("2026-10-11T17:00:00");
 const ago = (ms: number) => new Date(now.getTime() - ms);
@@ -19,5 +19,11 @@ describe("formatRelativeTime", () => {
     [new Date("2025-12-24T09:00:00"), "Dec 24, 2025"],
   ])("%s → %s", (date, expected) => {
     expect(formatRelativeTime(date, now)).toBe(expected);
+  });
+});
+
+describe("formatStableDate", () => {
+  it("formats in UTC, so server and browser agree", () => {
+    expect(formatStableDate(new Date("2026-10-01T23:30:00-07:00"))).toBe("Oct 2, 2026");
   });
 });

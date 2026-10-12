@@ -14,7 +14,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import type { RichTextDoc } from "./rich-text";
+import type { RichTextDoc } from "@repo/rich-text";
 
 // See docs/domain-model.md for the entity overview and invariants.
 

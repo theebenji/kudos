@@ -7,3 +7,4 @@ docs/templates/
 apps/api/schema.graphql
 packages/db/drizzle/
 packages/ui/src/tokens/tokens.css
+apps/web/gql/

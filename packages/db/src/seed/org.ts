@@ -97,13 +97,7 @@ export const KUDO_REASONS = [
   "for championing accessibility in every design review",
 ];
 
-export const KUDO_EMOJI = [
-  { name: "tada", emoji: "🎉" },
-  { name: "rocket", emoji: "🚀" },
-  { name: "heart", emoji: "❤️" },
-  { name: "star", emoji: "⭐" },
-  { name: "raised_hands", emoji: "🙌" },
-];
+export const KUDO_EMOJI = ["🎉", "🚀", "❤️", "⭐", "🙌"];
 
 export const COMMENTS = [
   "Couldn't agree more!",

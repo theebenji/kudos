@@ -18,5 +18,6 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 }
 
 export const config = {
-  matcher: ["/((?!api/|_next/|favicon.ico).*)"],
+  // Everything except API routes, Next assets, and the public demo GIFs (static files need no session).
+  matcher: ["/((?!api/|_next/|gifs/|favicon.ico).*)"],
 };

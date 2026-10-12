@@ -22,6 +22,31 @@ export class ConflictError extends Error {
   }
 }
 
+export class NotFoundError extends Error {
+  constructor(message = "Not found") {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
+
+/** The viewer may see the thing but not change it (e.g. editing someone else's kudo). */
+export class ForbiddenError extends Error {
+  constructor(message = "You can't do that") {
+    super(message);
+    this.name = "ForbiddenError";
+  }
+}
+
+export class RateLimitError extends Error {
+  readonly retryAfterSeconds: number;
+
+  constructor(message: string, retryAfterSeconds: number) {
+    super(message);
+    this.name = "RateLimitError";
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
 const ErrorInterface = builder.interfaceRef<Error>("Error").implement({
   fields: (t) => ({ message: t.exposeString("message") }),
 });
@@ -46,6 +71,25 @@ builder.objectType(ConflictError, {
   name: "ConflictError",
   interfaces: [ErrorInterface],
   isTypeOf: (value) => value instanceof ConflictError,
+});
+
+builder.objectType(NotFoundError, {
+  name: "NotFoundError",
+  interfaces: [ErrorInterface],
+  isTypeOf: (value) => value instanceof NotFoundError,
+});
+
+builder.objectType(ForbiddenError, {
+  name: "ForbiddenError",
+  interfaces: [ErrorInterface],
+  isTypeOf: (value) => value instanceof ForbiddenError,
+});
+
+builder.objectType(RateLimitError, {
+  name: "RateLimitError",
+  interfaces: [ErrorInterface],
+  isTypeOf: (value) => value instanceof RateLimitError,
+  fields: (t) => ({ retryAfterSeconds: t.exposeInt("retryAfterSeconds") }),
 });
 
 /** Postgres unique-violation, whether thrown by pg directly or wrapped by Drizzle. */

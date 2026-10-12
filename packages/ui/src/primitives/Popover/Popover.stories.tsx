@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SmilePlus } from "lucide-react";
-import { expect, screen, userEvent, waitFor } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import { Button } from "../Button/Button";
+import { Dialog } from "../Dialog/Dialog";
 import { IconButton } from "../IconButton/IconButton";
 import { Popover } from "./Popover";
 
@@ -26,5 +28,23 @@ export const Default: Story = {
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await expect(trigger).toHaveFocus();
+  },
+};
+
+/** Regression: popovers portal to <body>; one opened from inside a dialog must render above it. */
+export const InsideDialog: Story = {
+  render: (args) => (
+    <Dialog title="Give kudos" trigger={<Button>Open dialog</Button>}>
+      <Popover {...args} />
+    </Dialog>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Open dialog" }));
+    const dialog = await screen.findByRole("dialog", { name: "Give kudos" });
+    await userEvent.click(within(dialog).getByRole("button", { name: "Add reaction" }));
+    const popover = await screen.findByRole("dialog", { name: "Pick a reaction" });
+    const box = popover.getBoundingClientRect();
+    const topmost = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+    await expect(popover.contains(topmost)).toBe(true);
   },
 };

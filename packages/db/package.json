@@ -6,7 +6,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./schema": "./src/schema.ts",
-    "./rich-text": "./src/rich-text.ts",
     "./migrate": "./src/migrate.ts"
   },
   "scripts": {
@@ -18,6 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/rich-text": "workspace:*",
     "drizzle-orm": "^0.45.4",
     "pg": "^8.23.1"
   },

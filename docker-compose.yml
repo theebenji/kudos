@@ -60,6 +60,7 @@ services:
       WEB_ORIGIN: http://localhost:3000
       DATABASE_URL: *db-url
       AUTH_JWT_SECRET: *jwt-secret
+      GIPHY_API_KEY: ${GIPHY_API_KEY:-}
     ports:
       - "4000:4000"
     depends_on:
@@ -81,6 +82,7 @@ services:
       # Demo mode: the containers run production builds, so the seeded-user picker must be opted into.
       AUTH_DEV_LOGIN: "true"
       API_URL: http://api:4000/graphql
+      PUBLIC_API_URL: http://localhost:4000/graphql
     ports:
       - "3000:3000"
     depends_on:

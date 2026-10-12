@@ -1,0 +1,13 @@
+.header {
+  display: grid;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+}
+
+.header h1 {
+  font-size: var(--font-size-2xl);
+}
+
+.tagline {
+  color: var(--color-text-muted);
+}

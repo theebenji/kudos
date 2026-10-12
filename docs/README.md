@@ -33,6 +33,7 @@ The index for the project documentation. The source of truth is `docs/` in the r
 | [0009](adr/0009-testing-strategy.md)         | Layered testing strategy         |
 | [0010](adr/0010-docs-and-vault-sync.md)      | Docs in repo, one-way vault sync |
 | [0011](adr/0011-seaweedfs-replaces-minio.md) | SeaweedFS replaces MinIO         |
+| [0012](adr/0012-apollo-ssr-data-fetching.md) | Apollo in SSR client components  |
 
 If the Dataview plugin is installed, this query shows the same list:
 
@@ -54,6 +55,7 @@ TABLE status, updated FROM "adr" SORT file.name ASC
 - [Phase 1: monorepo scaffold](build-log/phase-1.md)
 - [Phase 2: database, API, auth bridge](build-log/phase-2.md)
 - [Phase 3: design system](build-log/phase-3.md)
+- [Phase 4: feed, composer, profiles](build-log/phase-4.md)
 
 ## Templates
 

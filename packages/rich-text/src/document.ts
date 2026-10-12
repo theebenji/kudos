@@ -1,7 +1,6 @@
 /**
- * Shape of a stored kudo body: a ProseMirror/Tiptap JSON document (ADR-0007).
- * Phase 4 adds the server-side allowlist validator; this module only knows the shape
- * and how to derive the plain-text column and the mention list from it.
+ * A stored kudo body: a ProseMirror/Tiptap JSON document (ADR-0007).
+ * Emoji are plain Unicode inside text nodes; mentions and GIFs are their own nodes.
  */
 export type RichTextMark = { type: "bold" | "italic" } | { type: "link"; attrs: { href: string } };
 
@@ -9,16 +8,16 @@ export type RichTextNode =
   | { type: "paragraph"; content?: RichTextNode[] }
   | { type: "bulletList" | "orderedList"; content?: RichTextNode[] }
   | { type: "listItem"; content?: RichTextNode[] }
+  | { type: "hardBreak" }
   | { type: "text"; text: string; marks?: RichTextMark[] }
   | { type: "mention"; attrs: { id: string; label: string } }
-  | { type: "emoji"; attrs: { name: string; emoji: string } }
   | { type: "gif"; attrs: { src: string; alt: string; width: number; height: number } };
 
 export type RichTextDoc = { type: "doc"; content: RichTextNode[] };
 
 const BLOCK_TYPES = new Set(["paragraph", "listItem", "bulletList", "orderedList"]);
 
-/** Plain text used for search, previews and length limits. Mentions render as `@Label`. */
+/** Plain text used for search, previews and length limits. Mentions render as `@Label`; GIFs are skipped. */
 export function toPlainText(doc: RichTextDoc): string {
   const blocks: string[] = [];
   const walk = (nodes: RichTextNode[] | undefined, line: string[]): void => {
@@ -30,8 +29,8 @@ export function toPlainText(doc: RichTextDoc): string {
         case "mention":
           line.push(`@${node.attrs.label}`);
           break;
-        case "emoji":
-          line.push(node.attrs.emoji);
+        case "hardBreak":
+          line.push("\n");
           break;
         case "gif":
           break;
@@ -48,7 +47,7 @@ export function toPlainText(doc: RichTextDoc): string {
   return blocks.join("\n").trim();
 }
 
-/** Distinct user ids mentioned anywhere in the document. */
+/** Distinct user ids mentioned anywhere in the document, in order of first appearance. */
 export function extractMentionIds(doc: RichTextDoc): string[] {
   const ids = new Set<string>();
   const walk = (nodes: RichTextNode[] | undefined): void => {
@@ -59,4 +58,28 @@ export function extractMentionIds(doc: RichTextDoc): string[] {
   };
   walk(doc.content);
   return [...ids];
+}
+
+/** Count of nodes of one type, e.g. how many GIFs a body has. */
+export function countNodes(doc: RichTextDoc, type: RichTextNode["type"]): number {
+  let count = 0;
+  const walk = (nodes: RichTextNode[] | undefined): void => {
+    for (const node of nodes ?? []) {
+      if (node.type === type) count += 1;
+      if ("content" in node) walk(node.content);
+    }
+  };
+  walk(doc.content);
+  return count;
+}
+
+/** A doc from plain paragraphs, e.g. for tests and seed data. */
+export function docFromText(...paragraphs: string[]): RichTextDoc {
+  return {
+    type: "doc",
+    content: paragraphs.map((text) => ({
+      type: "paragraph",
+      content: text ? [{ type: "text", text }] : [],
+    })),
+  };
 }

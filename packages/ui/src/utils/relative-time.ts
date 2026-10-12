@@ -25,3 +25,15 @@ export function formatRelativeTime(date: Date, now: Date = new Date()): string {
 export function formatFullDate(date: Date): string {
   return full.format(date);
 }
+
+const stableDate = new Intl.DateTimeFormat("en", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+/** Same output on server and client (fixed timezone), used until the browser's clock is known. */
+export function formatStableDate(date: Date): string {
+  return stableDate.format(date);
+}

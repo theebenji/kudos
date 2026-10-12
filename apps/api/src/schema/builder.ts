@@ -13,6 +13,7 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     DateTime: { Input: Date; Output: Date };
     Date: { Input: string; Output: string };
+    JSON: { Input: unknown; Output: unknown };
   };
   DefaultFieldNullability: false;
   DefaultEdgesNullability: false;
@@ -64,4 +65,11 @@ builder.scalarType("Date", {
     }
     return value;
   },
+});
+
+builder.scalarType("JSON", {
+  description:
+    "Arbitrary JSON. Kudo bodies are ProseMirror documents, validated server-side (ADR-0007).",
+  serialize: (value) => value,
+  parseValue: (value) => value,
 });

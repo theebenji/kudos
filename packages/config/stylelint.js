@@ -22,9 +22,12 @@ export default {
     ],
     "keyframe-declaration-no-important": true,
     // CSS Modules class names are used from TypeScript (`styles.counterFull`), so camelCase is fine.
+    // PascalCase is allowed for third-party classes styled through :global() (e.g. Tiptap's .ProseMirror).
     "selector-class-pattern": [
-      "^[a-z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*$",
+      "^[a-zA-Z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*$",
       { message: "Use camelCase or kebab-case class names" },
     ],
+    // CSS Modules' scoping escape hatches.
+    "selector-pseudo-class-no-unknown": [true, { ignorePseudoClasses: ["global", "local"] }],
   },
 };

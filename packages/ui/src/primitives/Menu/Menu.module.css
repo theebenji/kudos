@@ -1,5 +1,5 @@
 .content {
-  z-index: var(--z-dropdown);
+  z-index: var(--z-popover);
   min-width: 10rem;
   padding: var(--space-1);
   border: 1px solid var(--color-border);

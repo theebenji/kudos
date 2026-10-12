@@ -59,3 +59,20 @@ The project needs a reusable, accessible component library with Storybook. It mu
   - An ESLint rule bans `!important` in TypeScript strings.
   - Generated `tokens.css` is excluded from Stylelint, because its source (`tokens.ts`) is linted and tested.
 - **Combobox: built in-house.** It's built on Radix Popover following the [WAI-ARIA combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/), rather than adding Ariakit or React Aria. That keeps one behavior library and one focus-management system (which matters, because the picker lives inside the composer's Radix Dialog). The trade-off is that we own the hard parts: `aria-activedescendant`, live announcements, and keyboard removal of selected chips. Those get thorough interaction tests (Phase 4).
+
+## Amendment (Phase 4, 2026-10-11)
+
+- **The in-house combobox shipped as `MultiCombobox`.** It follows the WAI-ARIA combobox pattern:
+  - focus stays in the input, and `aria-activedescendant` marks the highlighted option
+  - selected people are removable chips; Backspace removes the last one
+  - results and selection changes are announced through a live region
+  - the listbox renders inline, not in a portal, so it works inside Radix dialog focus traps
+  - it opens only when you type or press ↓, and closes on blur and after each pick
+- **One keyboard hook (`useListNavigation`)** powers the combobox, @mention suggestions and the emoji/GIF pickers. It handles 2-D grids, and `defaultIndex` keeps the first option highlighted with no effect involved.
+- **Escape layering:**
+  - The Dialog ignores Escape from an expanded combobox, so the listbox closes first.
+  - The editor's mention popup catches Escape in a window capture listener, before Radix's document capture listener.
+  - While suggestions are open, Enter never inserts a line break.
+- **The editor uses `role="textbox"` without `aria-expanded`**, which ARIA doesn't allow on a textbox (axe caught it). It keeps `aria-autocomplete`, `aria-controls` and `aria-activedescendant`, and a live region announces suggestions.
+- **The z-index tokens were re-layered**: sticky 100 < overlay 200 < modal 210 < popover 300 < toast 400 < tooltip 500. Before that, popovers opened from inside a dialog rendered behind it; a regression story now asserts the popover is topmost.
+- **New primitives and patterns:** `SelectField` (native select), `CheckboxField`, `MultiCombobox`, `RichTextEditor`, `EmojiPicker` and `GifPicker`.

@@ -1,0 +1,18 @@
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.to,
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.formError {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-text);
+  font-size: var(--font-size-sm);
+}

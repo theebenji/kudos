@@ -133,7 +133,8 @@ export const scales = {
   },
   duration: { fast: "120ms", normal: "200ms" },
   easing: { standard: "cubic-bezier(0.2, 0, 0, 1)" },
-  z: { dropdown: "100", overlay: "200", modal: "210", toast: "300", tooltip: "400" },
+  // Floating layers (popovers, menus, tooltips) must sit above the modal they can be opened from.
+  z: { sticky: "100", overlay: "200", modal: "210", popover: "300", toast: "400", tooltip: "500" },
 } as const;
 
 export type ColorToken = keyof ColorTokens;

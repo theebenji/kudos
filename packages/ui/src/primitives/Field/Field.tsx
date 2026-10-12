@@ -138,3 +138,74 @@ export function TextArea({
     </FieldFrame>
   );
 }
+
+export type SelectFieldProps = Omit<ComponentPropsWithRef<"select">, "children"> &
+  FieldChrome & {
+    options: { value: string; label: string }[];
+    /** Optional first option, e.g. "All values". Its value is "". */
+    placeholder?: string;
+  };
+
+/** Native select: the most robust accessible choice for short lists (keyboard, screen readers, mobile). */
+export function SelectField({
+  label,
+  description,
+  error,
+  hideLabel,
+  id,
+  className,
+  options,
+  placeholder,
+  ...props
+}: SelectFieldProps) {
+  const ids = useFieldIds(id);
+  return (
+    <FieldFrame {...{ label, description, error, hideLabel, ids }}>
+      <select
+        id={ids.controlId}
+        className={clsx(styles.control, styles.select, className)}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(
+          description !== undefined && ids.descriptionId,
+          !!error && ids.errorId,
+        )}
+        {...props}
+      >
+        {placeholder !== undefined && <option value="">{placeholder}</option>}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </FieldFrame>
+  );
+}
+
+export type CheckboxFieldProps = Omit<ComponentPropsWithRef<"input">, "type" | "children"> & {
+  label: string;
+  description?: ReactNode;
+};
+
+export function CheckboxField({ label, description, id, className, ...props }: CheckboxFieldProps) {
+  const ids = useFieldIds(id);
+  return (
+    <div className={styles.checkboxField}>
+      <input
+        id={ids.controlId}
+        type="checkbox"
+        className={clsx(styles.checkbox, className)}
+        aria-describedby={description !== undefined ? ids.descriptionId : undefined}
+        {...props}
+      />
+      <label htmlFor={ids.controlId} className={styles.label}>
+        {label}
+      </label>
+      {description && (
+        <p id={ids.descriptionId} className={styles.checkboxDescription}>
+          {description}
+        </p>
+      )}
+    </div>
+  );
+}

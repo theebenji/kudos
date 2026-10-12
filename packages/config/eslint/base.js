@@ -5,7 +5,9 @@ import tseslint from "typescript-eslint";
 
 /** Shared rules for every package. Formatting is Prettier's job, so its conflicts are disabled. */
 export default tseslint.config(
-  { ignores: ["**/dist/**", "**/.next/**", "**/storybook-static/**", "**/coverage/**"] },
+  {
+    ignores: ["**/dist/**", "**/.next/**", "**/storybook-static/**", "**/coverage/**", "**/gql/**"],
+  },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {

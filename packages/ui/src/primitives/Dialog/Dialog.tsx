@@ -37,6 +37,12 @@ export function Dialog({
         <DialogPrimitive.Overlay className={styles.overlay} />
         <DialogPrimitive.Content
           className={clsx(styles.content, styles[size])}
+          // Escape inside an open combobox (e.g. the people picker) closes its listbox first, not the
+          // whole dialog. Radix listens in the capture phase, so the check must live here.
+          onEscapeKeyDown={(event) => {
+            const target = event.target as HTMLElement | null;
+            if (target?.getAttribute?.("aria-expanded") === "true") event.preventDefault();
+          }}
           {...(description ? {} : { "aria-describedby": undefined })}
         >
           <header className={styles.header}>

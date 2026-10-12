@@ -4,6 +4,7 @@ import { SignJWT } from "jose";
 import { afterAll, beforeEach, inject } from "vitest";
 import { API_TOKEN_AUDIENCE, API_TOKEN_ISSUER } from "../src/auth/token";
 import { type Env, loadEnv } from "../src/env";
+import { BundledGifProvider } from "../src/gifs/provider";
 import { createApp } from "../src/yoga";
 
 export const TEST_JWT_SECRET = "test-only-jwt-secret-at-least-32-characters";
@@ -17,7 +18,7 @@ export function setupTestApi(envOverrides: Partial<Record<keyof Env, string>> = 
     ...envOverrides,
   });
   const db = createDb(env.DATABASE_URL, { max: 2 });
-  const app = createApp({ db, env });
+  const app = createApp({ db, env, gifs: new BundledGifProvider() });
 
   beforeEach(() => resetDb(db));
   afterAll(() => db.$client.end());

@@ -3,6 +3,8 @@ import { builder } from "./builder";
 import "./errors";
 import "./types/user";
 import "./types/value";
+import "./types/kudo";
+import "./types/search";
 
 builder.queryType({
   fields: (t) => ({

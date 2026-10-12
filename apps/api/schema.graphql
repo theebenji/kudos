@@ -2,6 +2,18 @@ type ConflictError implements Error {
   message: String!
 }
 
+input CreateKudoInput {
+  body: JSON!
+  recipientIds: [ID!]!
+  valueId: ID
+}
+
+union CreateKudoResult = CreateKudoSuccess | RateLimitError | ValidationError
+
+type CreateKudoSuccess {
+  data: Kudo!
+}
+
 input CreateValueInput {
   description: String
   emoji: String
@@ -20,6 +32,12 @@ scalar Date
 """An ISO-8601 timestamp, e.g. 2026-10-11T17:00:00.000Z"""
 scalar DateTime
 
+union DeleteKudoResult = DeleteKudoSuccess | ForbiddenError | NotFoundError
+
+type DeleteKudoSuccess {
+  data: ID!
+}
+
 interface Error {
   message: String!
 }
@@ -31,12 +49,85 @@ type FieldError {
   path: String!
 }
 
+type ForbiddenError implements Error {
+  message: String!
+}
+
+type Gif {
+  alt: String!
+  height: Int!
+  id: String!
+
+  """Image URL: a bundled /gifs/… path or a GIPHY media URL."""
+  src: String!
+  width: Int!
+}
+
+"""
+Arbitrary JSON. Kudo bodies are ProseMirror documents, validated server-side (ADR-0007).
+"""
+scalar JSON
+
+type Kudo implements Node {
+  """
+  The message as a ProseMirror document (paragraphs, marks, lists, mentions, GIFs).
+  """
+  body: JSON!
+
+  """Plain-text version, for previews and search."""
+  bodyText: String!
+  createdAt: DateTime!
+  editedAt: DateTime
+  id: ID!
+  isEdited: Boolean!
+  recipients: [User!]!
+  sender: User!
+  value: Value
+  viewerCanDelete: Boolean!
+  viewerCanEdit: Boolean!
+}
+
+type KudoConnection {
+  edges: [KudoEdge!]!
+  pageInfo: PageInfo!
+}
+
+type KudoEdge {
+  cursor: String!
+  node: Kudo!
+}
+
+input KudoFilter {
+  """Only kudos with a recipient in this department."""
+  department: String
+
+  """Only kudos I sent, received, or was mentioned in."""
+  involvingMe: Boolean
+
+  """Only kudos with a recipient on this team."""
+  team: String
+
+  """Only kudos tagged with this value."""
+  valueId: ID
+}
+
 type Mutation {
+  createKudo(input: CreateKudoInput!): CreateKudoResult!
   createValue(input: CreateValueInput!): CreateValueResult!
+
+  """
+  Soft-deletes a kudo and returns its global id (so clients can evict it from caches).
+  """
+  deleteKudo(id: ID!): DeleteKudoResult!
+  updateKudo(input: UpdateKudoInput!): UpdateKudoResult!
 }
 
 interface Node {
   id: ID!
+}
+
+type NotFoundError implements Error {
+  message: String!
 }
 
 type PageInfo {
@@ -47,10 +138,37 @@ type PageInfo {
 }
 
 type Query {
+  """Departments of active people, for filters."""
+  departments: [String!]!
+
+  """
+  "giphy" or "bundled", so the picker can show attribution or a demo-mode note.
+  """
+  gifSource: String!
+
+  """
+  GIF search for the composer: GIPHY when configured, otherwise the bundled demo set.
+  """
+  gifs(first: Int = 12, query: String = ""): [Gif!]!
+
   """Liveness check; needs no auth."""
   health: String!
+
+  """One kudo by id, or null if it doesn't exist or was deleted."""
+  kudo(id: ID!): Kudo
+
+  """The global feed, newest first."""
+  kudos(after: String, before: String, filter: KudoFilter, first: Int, last: Int): KudoConnection!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
+
+  """
+  Active people whose name, title or team matches; best matches first. For pickers and @mentions.
+  """
+  searchPeople(excludeViewer: Boolean = true, first: Int = 8, query: String!): [User!]!
+
+  """Teams of active people, for filters."""
+  teams: [String!]!
   user(handle: String!): User
 
   """Active people, alphabetical by name."""
@@ -65,6 +183,23 @@ type Query {
   viewer: User
 }
 
+type RateLimitError implements Error {
+  message: String!
+  retryAfterSeconds: Int!
+}
+
+input UpdateKudoInput {
+  body: JSON!
+  id: ID!
+  valueId: ID
+}
+
+union UpdateKudoResult = ForbiddenError | NotFoundError | UpdateKudoSuccess | ValidationError
+
+type UpdateKudoSuccess {
+  data: Kudo!
+}
+
 type User implements Node {
   bio: String
   department: String
@@ -77,6 +212,10 @@ type User implements Node {
   id: ID!
   isActive: Boolean!
   joinedOn: Date
+  kudosGiven(after: String, before: String, first: Int, last: Int): UserKudosGivenConnection!
+  kudosGivenCount: Int!
+  kudosReceived(after: String, before: String, first: Int, last: Int): UserKudosReceivedConnection!
+  kudosReceivedCount: Int!
   manager: User
 
   """
@@ -96,6 +235,26 @@ type UserConnection {
 type UserEdge {
   cursor: String!
   node: User!
+}
+
+type UserKudosGivenConnection {
+  edges: [UserKudosGivenEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserKudosGivenEdge {
+  cursor: String!
+  node: Kudo!
+}
+
+type UserKudosReceivedConnection {
+  edges: [UserKudosReceivedEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserKudosReceivedEdge {
+  cursor: String!
+  node: Kudo!
 }
 
 enum UserRole {

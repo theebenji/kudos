@@ -15,7 +15,10 @@ const EnvSchema = z.object({
   AUTH_OIDC_CLIENT_ID: optional,
   AUTH_OIDC_CLIENT_SECRET: optional,
   AUTH_OIDC_NAME: z.string().default("SSO"),
+  /** How this server reaches the API (in Docker: http://api:4000/graphql). */
   API_URL: z.url().default("http://localhost:4000/graphql"),
+  /** How browsers reach the API. Passed to the client at runtime, so one image works anywhere. */
+  PUBLIC_API_URL: z.url().default("http://localhost:4000/graphql"),
 });
 
 export type WebEnv = z.infer<typeof EnvSchema> & { devLoginEnabled: boolean; oidcEnabled: boolean };

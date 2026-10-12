@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.identity {
+  display: grid;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 14rem;
+}
+
+.name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-2xl);
+}
+
+.meta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.meta a {
+  color: var(--color-accent-text);
+}
+
+.bio {
+  margin-top: var(--space-2);
+}

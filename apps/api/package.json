@@ -33,6 +33,7 @@
   "devDependencies": {
     "@repo/config": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/rich-text": "workspace:*",
     "@testcontainers/postgresql": "^12.2.0",
     "@types/node": "^24.0.0",
     "eslint": "^9.39.0",

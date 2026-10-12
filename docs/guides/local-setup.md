@@ -32,20 +32,22 @@ If `docker` isn't found right after installing Docker Desktop, open a new termin
 
 ## Everyday commands
 
-| Command                                      | What it does                                                                           |
-| -------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `pnpm dev`                                   | Run every app in watch mode                                                            |
-| `pnpm storybook`                             | Storybook at http://localhost:6006                                                     |
-| `pnpm lint` / `pnpm typecheck` / `pnpm test` | Checks across all packages (cached by Turborepo)                                       |
-| `pnpm test:storybook`                        | Run every story in headless Chromium, including axe a11y                               |
-| `pnpm build`                                 | Production builds (Next standalone, API, Storybook)                                    |
-| `pnpm format`                                | Prettier                                                                               |
-| `pnpm docs:sync`                             | Copy `docs/` into the Obsidian vault                                                   |
-| `pnpm db:generate`                           | Generate a SQL migration after editing `packages/db/src/schema.ts`                     |
-| `pnpm db:migrate` / `pnpm db:seed`           | Apply migrations / reset the demo data                                                 |
-| `pnpm db:studio`                             | Drizzle Studio (browse the database)                                                   |
-| `pnpm schema:print`                          | Regenerate `apps/api/schema.graphql` after schema changes (a test fails if it's stale) |
-| `docker compose --profile app up -d --build` | Also run migrations, the API and web app in containers                                 |
+| Command                                      | What it does                                                                              |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `pnpm dev`                                   | Run every app in watch mode                                                               |
+| `pnpm storybook`                             | Storybook at http://localhost:6006                                                        |
+| `pnpm lint` / `pnpm typecheck` / `pnpm test` | Checks across all packages (cached by Turborepo)                                          |
+| `pnpm test:storybook`                        | Run every story in headless Chromium, including axe a11y                                  |
+| `pnpm build`                                 | Production builds (Next standalone, API, Storybook)                                       |
+| `pnpm format`                                | Prettier                                                                                  |
+| `pnpm docs:sync`                             | Copy `docs/` into the Obsidian vault                                                      |
+| `pnpm db:generate`                           | Generate a SQL migration after editing `packages/db/src/schema.ts`                        |
+| `pnpm db:migrate` / `pnpm db:seed`           | Apply migrations / reset the demo data                                                    |
+| `pnpm db:studio`                             | Drizzle Studio (browse the database)                                                      |
+| `pnpm schema:print`                          | Regenerate `apps/api/schema.graphql` after schema changes (a test fails if it's stale)    |
+| `pnpm --filter @repo/web codegen`            | Regenerate typed GraphQL documents (`apps/web/gql/`) after changing queries or the schema |
+| `pnpm --filter @repo/web gifs:generate`      | Regenerate the bundled demo GIFs and their manifest                                       |
+| `docker compose --profile app up -d --build` | Also run migrations, the API and web app in containers                                    |
 
 ## Ports
 
@@ -62,6 +64,10 @@ If `docker` isn't found right after installing Docker Desktop, open a new termin
 1. Create a project at chromatic.com, linked to the GitHub repo.
 2. Add its token as the GitHub Actions secret `CHROMATIC_PROJECT_TOKEN`. CI skips the Chromatic job with a notice until the secret exists.
 3. To run it locally: `CHROMATIC_PROJECT_TOKEN=… pnpm --filter @repo/ui chromatic`.
+
+## GIF search
+
+Without `GIPHY_API_KEY`, the composer's GIF picker searches the 20 bundled demo GIFs, and says so. To use GIPHY, put a key in `.env` (`GIPHY_API_KEY=…`) and restart the API. Results are proxied through the API, with a PG-13 content rating.
 
 ## Notes
 

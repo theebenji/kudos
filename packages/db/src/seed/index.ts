@@ -2,7 +2,13 @@ import { faker } from "@faker-js/faker";
 import { sql } from "drizzle-orm";
 import { createDb, type Database } from "../client";
 import { handleBaseFromEmail } from "../queries/users";
-import { extractMentionIds, type RichTextDoc, type RichTextNode, toPlainText } from "../rich-text";
+import {
+  BUNDLED_GIFS,
+  extractMentionIds,
+  type RichTextDoc,
+  type RichTextNode,
+  toPlainText,
+} from "@repo/rich-text";
 import {
   comments,
   kudoMentions,
@@ -27,7 +33,6 @@ import {
 } from "./org";
 
 // Deterministic demo data: same seed → same org, so screenshots and demos are reproducible.
-// GIF nodes are added in Phase 4, when the bundled GIF set exists.
 
 const USER_COUNT = 50;
 const KUDO_COUNT = 300;
@@ -111,9 +116,18 @@ function buildKudoDoc(recipients: SeedUser[], mention: SeedUser | null): RichTex
   }
   content.push({ type: "text", text: "! " });
   if (faker.datatype.boolean(0.7)) {
-    content.push({ type: "emoji", attrs: faker.helpers.arrayElement(KUDO_EMOJI) });
+    content.push({ type: "text", text: faker.helpers.arrayElement(KUDO_EMOJI) });
   }
-  return { type: "doc", content: [{ type: "paragraph", content }] };
+  const paragraphs: RichTextNode[] = [{ type: "paragraph", content }];
+  // Some kudos carry one of the bundled demo GIFs (SPEC §1.4).
+  if (faker.datatype.boolean(0.15)) {
+    const { src, alt, width, height } = faker.helpers.arrayElement(BUNDLED_GIFS);
+    paragraphs.push({
+      type: "paragraph",
+      content: [{ type: "gif", attrs: { src, alt, width, height } }],
+    });
+  }
+  return { type: "doc", content: paragraphs };
 }
 
 export async function seed(db: Database) {

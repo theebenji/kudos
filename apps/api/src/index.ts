@@ -1,13 +1,16 @@
 import { createServer } from "node:http";
 import { createDb } from "@repo/db";
 import { loadEnv } from "./env";
+import { createGifProvider } from "./gifs/provider";
 import { createLogger } from "./logger";
 import { createApp } from "./yoga";
 
 const env = loadEnv();
 const logger = createLogger(env);
 const db = createDb(env.DATABASE_URL);
-const yoga = createApp({ db, env });
+const gifs = createGifProvider(env.GIPHY_API_KEY);
+const yoga = createApp({ db, env, gifs });
+logger.info(`GIF search: ${gifs.source}`);
 
 const server = createServer(yoga);
 server.listen(env.API_PORT, () => {

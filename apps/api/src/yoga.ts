@@ -8,7 +8,7 @@ import { schema } from "./schema";
 
 export type AppDeps = ContextDeps & { env: Env };
 
-export function createApp({ db, env }: AppDeps) {
+export function createApp({ db, env, gifs }: AppDeps) {
   const production = env.NODE_ENV === "production";
   // Query-shape limits against abusive operations (SPEC §2.3).
   // Report violations as ordinary validation errors (HTTP 400 with a clear message). Armor's
@@ -28,7 +28,7 @@ export function createApp({ db, env }: AppDeps) {
 
   return createYoga({
     schema,
-    context: ({ request }) => createContext(request, { db, env }),
+    context: ({ request }) => createContext(request, { db, env, gifs }),
     graphqlEndpoint: "/graphql",
     cors: { origin: env.WEB_ORIGIN, credentials: true },
     graphiql: !production,

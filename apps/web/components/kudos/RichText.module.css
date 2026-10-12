@@ -1,0 +1,36 @@
+.richText > * + * {
+  margin-top: var(--space-2);
+}
+
+.richText ul,
+.richText ol {
+  padding-left: var(--space-6);
+}
+
+.link,
+.mention {
+  color: var(--color-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.mention {
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.mention:hover {
+  text-decoration: underline;
+}
+
+.link:focus-visible,
+.mention:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.gif {
+  max-width: min(100%, 18rem);
+  border-radius: var(--radius-md);
+}

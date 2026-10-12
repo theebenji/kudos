@@ -8,6 +8,8 @@ const EnvSchema = z.object({
   DATABASE_URL: z.url(),
   /** Shared with apps/web, which signs the tokens this API verifies (ADR-0005). */
   AUTH_JWT_SECRET: z.string().min(32, "AUTH_JWT_SECRET must be at least 32 characters"),
+  /** Optional: without it, GIF search uses the bundled demo set (SPEC §1.4). */
+  GIPHY_API_KEY: z.string().trim().min(1).optional().catch(undefined),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

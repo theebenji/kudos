@@ -2,7 +2,8 @@ import { clsx } from "clsx";
 import { type ElementType, Fragment, type ReactNode, useId } from "react";
 import { Avatar } from "../../primitives/Avatar/Avatar";
 import { Card } from "../../primitives/Card/Card";
-import { formatFullDate, formatRelativeTime } from "../../utils/relative-time";
+import { formatFullDate, formatRelativeTime, formatStableDate } from "../../utils/relative-time";
+import { useNow } from "../../utils/use-now";
 import { ValueBadge } from "../ValueBadge/ValueBadge";
 import styles from "./KudoCard.module.css";
 
@@ -75,9 +76,15 @@ export function KudoCard({
   className,
 }: KudoCardProps) {
   const headingId = useId();
+  const clientNow = useNow();
+  const reference = now ?? clientNow;
+  // Until the browser's clock is known (server render + hydration), show a timezone-stable date.
   const time = (
-    <time dateTime={createdAt.toISOString()} title={formatFullDate(createdAt)}>
-      {formatRelativeTime(createdAt, now)}
+    <time
+      dateTime={createdAt.toISOString()}
+      title={reference ? formatFullDate(createdAt) : undefined}
+    >
+      {reference ? formatRelativeTime(createdAt, reference) : formatStableDate(createdAt)}
     </time>
   );
   return (

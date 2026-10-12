@@ -28,3 +28,10 @@ v1 notifications are in-app and realtime. Email (and later possibly Slack) must 
 - Adding email means writing `EmailChannel` plus per-user preferences, with no changes to the resolvers.
 - pg-boss uses Postgres, so there's no new infrastructure.
 - Delivery is eventually consistent, within about a second.
+
+## Amendment (Phase 4, 2026-10-11)
+
+The kudo mutations already write outbox events, which Phase 5's worker will consume:
+
+- `kudo.created` with `{ kudoId, senderId, recipientIds, mentionIds }`
+- `kudo.mentions_added` with `{ kudoId, senderId, mentionIds, recipientIds }`, written on edit and containing only the newly mentioned people
