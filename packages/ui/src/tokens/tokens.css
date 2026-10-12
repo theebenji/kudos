@@ -1,0 +1,59 @@
+/*
+ * Design tokens (Phase 1 starter set).
+ * Phase 3 replaces this hand-written file with one generated from TypeScript tokens.
+ * Components must only reference these variables, never raw values.
+ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #ffffff;
+  --color-surface: #f6f7f9;
+  --color-text: #16181d;
+  --color-text-muted: #5b6170;
+  --color-border: #d9dde4;
+  --color-accent: #5b3df5;
+  --color-accent-hover: #4a2ee0;
+  --color-on-accent: #ffffff;
+  --color-focus-ring: #5b3df5;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-weight-medium: 500;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+
+  --radius-md: 0.5rem;
+  --duration-fast: 120ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #111318;
+    --color-surface: #1b1e25;
+    --color-text: #eef0f4;
+    --color-text-muted: #a3a9b6;
+    --color-border: #2e323c;
+    --color-accent: #8b74ff;
+    --color-accent-hover: #a08dff;
+    --color-on-accent: #0d0b1a;
+    --color-focus-ring: #a08dff;
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #111318;
+  --color-surface: #1b1e25;
+  --color-text: #eef0f4;
+  --color-text-muted: #a3a9b6;
+  --color-border: #2e323c;
+  --color-accent: #8b74ff;
+  --color-accent-hover: #a08dff;
+  --color-on-accent: #0d0b1a;
+  --color-focus-ring: #a08dff;
+}

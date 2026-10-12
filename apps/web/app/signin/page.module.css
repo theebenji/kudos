@@ -1,0 +1,37 @@
+.main {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+.demo {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.demo h2 {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.note,
+.meta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.people {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.people button {
+  justify-content: space-between;
+  width: 100%;
+}

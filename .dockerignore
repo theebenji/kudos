@@ -1,0 +1,10 @@
+**/node_modules
+**/.next
+**/dist
+**/storybook-static
+**/.turbo
+**/coverage
+**/.env
+**/.env*.local
+.git
+docs

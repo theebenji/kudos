@@ -1,0 +1,33 @@
+{
+  "name": "kudos",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:storybook": "turbo run test:storybook",
+    "storybook": "pnpm --filter @repo/ui storybook",
+    "db:generate": "pnpm --filter @repo/db db:generate",
+    "db:migrate": "pnpm --filter @repo/db db:migrate",
+    "db:seed": "pnpm --filter @repo/db db:seed",
+    "db:studio": "pnpm --filter @repo/db db:studio",
+    "schema:print": "pnpm --filter @repo/api schema:print",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "docs:sync": "node scripts/docs-sync.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.7",
+    "typescript": "~6.0.3"
+  }
+}

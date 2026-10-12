@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+.next/
+dist/
+storybook-static/
+coverage/
+docs/templates/
+apps/api/schema.graphql
+packages/db/drizzle/

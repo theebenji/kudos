@@ -1,0 +1,119 @@
+type ConflictError implements Error {
+  message: String!
+}
+
+input CreateValueInput {
+  description: String
+  emoji: String
+  name: String!
+}
+
+union CreateValueResult = ConflictError | CreateValueSuccess | ValidationError
+
+type CreateValueSuccess {
+  data: Value!
+}
+
+"""A calendar date, e.g. 2026-10-11"""
+scalar Date
+
+"""An ISO-8601 timestamp, e.g. 2026-10-11T17:00:00.000Z"""
+scalar DateTime
+
+interface Error {
+  message: String!
+}
+
+type FieldError {
+  message: String!
+
+  """Input field the error refers to, e.g. `name`"""
+  path: String!
+}
+
+type Mutation {
+  createValue(input: CreateValueInput!): CreateValueResult!
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+type Query {
+  """Liveness check; needs no auth."""
+  health: String!
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+  user(handle: String!): User
+
+  """Active people, alphabetical by name."""
+  users(after: String, before: String, first: Int, last: Int): UserConnection!
+
+  """
+  Company values, in display order. Archived values are excluded unless asked for.
+  """
+  values(includeArchived: Boolean = false): [Value!]!
+
+  """The signed-in user, or null when the request has no valid token."""
+  viewer: User
+}
+
+type User implements Node {
+  bio: String
+  department: String
+
+  """Hidden (null) for deactivated users unless the viewer is an admin."""
+  email: String
+
+  """URL identifier, used in /people/[handle]"""
+  handle: String!
+  id: ID!
+  isActive: Boolean!
+  joinedOn: Date
+  manager: User
+
+  """
+  Display name. Deactivated users show as "Former employee" to non-admins.
+  """
+  name: String!
+  role: UserRole!
+  team: String
+  title: String
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+
+type ValidationError implements Error {
+  fieldErrors: [FieldError!]!
+  message: String!
+}
+
+type Value implements Node {
+  archivedAt: DateTime
+  description: String
+  emoji: String
+  id: ID!
+  isArchived: Boolean!
+  name: String!
+  sortOrder: Int!
+}

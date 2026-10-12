@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  checks:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm turbo run lint typecheck test build
+
+  storybook:
+    name: Storybook tests (interactions + a11y)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @repo/ui exec playwright install --with-deps chromium
+      - run: pnpm test:storybook
+
+  chromatic:
+    name: Chromatic (visual regression)
+    runs-on: ubuntu-latest
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Chromatic needs git history for baselines and TurboSnap
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Skip notice
+        if: env.CHROMATIC_PROJECT_TOKEN == ''
+        run: echo "::notice::CHROMATIC_PROJECT_TOKEN secret not set — skipping Chromatic."
+      - if: env.CHROMATIC_PROJECT_TOKEN != ''
+        run: pnpm install --frozen-lockfile
+      - if: env.CHROMATIC_PROJECT_TOKEN != ''
+        run: pnpm turbo run build --filter=@repo/ui
+      - if: env.CHROMATIC_PROJECT_TOKEN != ''
+        working-directory: packages/ui
+        run: pnpm exec chromatic --exit-zero-on-changes

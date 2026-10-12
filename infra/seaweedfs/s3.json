@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "kudos-dev",
+      "credentials": [{ "accessKey": "kudos-dev-access", "secretKey": "kudos-dev-secret" }],
+      "actions": ["Admin", "Read", "List", "Tagging", "Write"]
+    }
+  ]
+}
